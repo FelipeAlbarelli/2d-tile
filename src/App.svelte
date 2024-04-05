@@ -37,7 +37,7 @@
         tileCoord={{col : 1, row : 1 }}
       />
       <Tile 
-        gridPosition={{col : 52 * 3 ,  row : 1}}
+        gridPosition={{col :  3 ,  row : 1}}
         tileCoord={{col : 1, row : 1 }}
       />
         {#each $allTiles as tile }

@@ -15,6 +15,7 @@
     export let rows = 22;
     export let cols = 49 ;
 
+    export let gap = 4
 
 
     export let tileCoord : {
@@ -89,5 +90,8 @@
 <Image 
     on:pointerclick={click}
     bind:handle={handle}
-    config={{ image , y: gridPosition.col   , x :  gridPosition.row }}     
+    config={{ 
+        image , 
+        y: (gridPosition.col  * finalSize) + ( (gridPosition.col - 1) * gap )  , 
+        x :  gridPosition.row }}     
     />

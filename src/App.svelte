@@ -32,16 +32,12 @@
       <Layer
       config={{imageSmoothingEnabled: false }}
       >
-      <Tile 
-        gridPosition={{col : 0 , row : 0}}
-        tileCoord={{col : 1, row : 1 }}
-      />
-      <Tile 
-        gridPosition={{col :  3 ,  row : 1}}
-        tileCoord={{col : 1, row : 1 }}
-      />
-        {#each $allTiles as tile }
-        {/each}
+      {#each $allTiles.filter( (a,i) => i < 5 ) as tile }
+        <Tile 
+          gridPosition={{col : tile.index , row : 0}}
+          tileCoord={{col : tile.col , row : tile.row }}
+        />
+      {/each}
 
       </Layer>
     </Stage>

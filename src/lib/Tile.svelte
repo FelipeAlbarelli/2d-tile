@@ -92,6 +92,6 @@
     bind:handle={handle}
     config={{ 
         image , 
-        y: (gridPosition.col  * finalSize) + ( (gridPosition.col - 1) * gap )  , 
+        y: gridPosition.col * ( finalSize * scaleFactor + gap )  , 
         x :  gridPosition.row }}     
     />

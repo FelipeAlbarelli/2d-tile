@@ -31,7 +31,7 @@
 
 
 
-    $: finalSize = tileSize * scaleFactor
+    let finalSize = scaleFactor * tileSize
 
     onMount(() => {
         const img = document.createElement("img");
@@ -42,18 +42,17 @@
     });
     function setAtributes() {
         handle.setAttrs({
-              scaleX: scaleFactor,
-              scaleY: scaleFactor,
-              width: tileSize / 2,
-              height: tileSize / 2,
+            //   scaleX: scaleFactor,
+            //   scaleY: scaleFactor,
               custom : {
                 tileCoord,
                 gridPosition
               }
             });
 
-        handle.width(tileSize * scaleFactor)
-        handle.height(tileSize * scaleFactor)
+        handle.width(tileSize  )
+        handle.height(tileSize );
+        console.log(handle.width() , handle.height() )
     }
 
 
@@ -92,6 +91,6 @@
     bind:handle={handle}
     config={{ 
         image , 
-        y: gridPosition.col * ( finalSize * scaleFactor + gap )  , 
+        y: gridPosition.col *  (tileSize + gap )  , 
         x :  gridPosition.row }}     
     />

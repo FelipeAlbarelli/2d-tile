@@ -7,13 +7,17 @@
     import Tile from './lib/Tile.svelte';
     import { setContext } from 'svelte';
     import { allTiles, store, totalTiles } from './store';
-
+  import { Layer as LayerType } from 'konva/lib/Layer'
+    import { scale } from 'svelte/transition';
+    import { writable } from 'svelte/store';
 
     
-  const controlValues = {
-    x : 0,
-    y: 0
-  }
+  let controlValues = writable({
+    scale : 4,
+    gap : 2,
+  })
+
+  let sideStage : LayerType
 
   const updateStore = () => {
     // store.set({
@@ -27,13 +31,29 @@
 
 <div class="main">
   <div class="side-bar">
+    <div class="side-nav">
+      <button>  👈  </button>
+      <button>  👉  </button>
+    </div>
     <Stage 
-    config={{ width: 160, height: window.innerHeight - 40 }} > 
+    config={{ width: (16 * $controlValues.scale) + 8 , height: window.innerHeight - 40 , scale : {x: 1, y : 1} }} > 
       <Layer
-      config={{imageSmoothingEnabled: false }}
+        bind:handle={sideStage}
+        config={{
+          imageSmoothingEnabled: false ,
+          y : 8,
+          x : 8,
+          scaleX : $controlValues.scale,
+          scaleY : $controlValues.scale 
+        }}
       >
       {#each $allTiles.filter( (a,i) => i < 5 ) as tile }
+        <!-- <Tile 
+          gridPosition={{col : tile.index , row : 0}}
+          tileCoord={{col : tile.col , row : tile.row }}
+        /> -->
         <Tile 
+          gap={$controlValues.gap}
           gridPosition={{col : tile.index , row : 0}}
           tileCoord={{col : tile.col , row : tile.row }}
         />
@@ -51,8 +71,8 @@
 </div>
 
 <div class="control-bar">
-  <input on:change={updateStore}  bind:value={controlValues.x} type="number" />  
-  <input on:change={updateStore}  bind:value={controlValues.y} type="number" />  
+  <input on:change={updateStore}  bind:value={$controlValues.scale} type="number" />  
+  <input on:change={updateStore}  bind:value={$controlValues.gap} type="number" />  
 </div>
 
 <style lang="scss" >
@@ -82,7 +102,23 @@
   .side-bar {
     border: 2px solid white;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &:nth-child(2) {
+      display: contents
+    }
     /* width: 100px; */
+  }
+
+  .side-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    button {
+      padding: 8px;
+      border: 2px solid blue;
+    }
   }
 
 </style>

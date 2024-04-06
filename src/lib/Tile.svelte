@@ -111,7 +111,7 @@
     config={{ 
         image , 
         y:  gridPosition.row *  (dimensions + gap )  , 
-        x :  gridPosition.col 
+        x : gridPosition.col *  (dimensions + gap )
     }}     
 />  
 {/if}

@@ -48,7 +48,6 @@
     const context = setContext('grid' , gridStore)
 
     gridStore.subscribe( ({pointerX,pointerY}) => {
-        console.log({pointerX, pointerY})
     })
 
     
@@ -66,7 +65,7 @@
     $: height = ((tileSetDim + gap) *scale * dim.row) + padding * 2
 
     const hanlderContext = (e: MouseEvent) => {
-        console.log(e.clientX , e.clientY)
+        console.log( $gridStore )
     }
 
     const logger = (e: any) => {

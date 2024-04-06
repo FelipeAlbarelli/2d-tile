@@ -1,10 +1,24 @@
 <script lang="ts">
-    import { someTiles  } from '../store'
-     import { Stage, Layer, Rect , Image } from 'svelte-konva';
+    import { someTiles, type TileData  } from '../store'
+    import { Stage, Layer, Rect , Image } from 'svelte-konva';
     import Tile from './Tile.svelte'
     import { Layer as LayerType } from 'konva/lib/Layer'
-      import { writable } from 'svelte/store';
-
+    import { derived, writable } from 'svelte/store';
+    
+    type TileInGrid = TileData & {pagePos : number} 
+    
+    const selectedTile = writable<TileInGrid  | null>(null)
+    const rectParams = derived(selectedTile , (sel) => {
+        console.log(sel)
+        if (sel == null) {
+            return {
+                y : -100,
+            }
+        }
+        return {
+            y : (sel.dimensions + gap) * sel.pagePos
+        }
+    })
     
   
     let sideStage : LayerType
@@ -16,17 +30,17 @@
 
     export let gap : number
     export let padding = 12;
+    export let tilesToDisplay = 10;
+    export let tileSetDim = 16;
 
-    let selectedTileIndex : null | number = 1;
+    let selectedTileIndex : number = 1;
     
-    $: sideTiles =  $someTiles( page * 10 ,10).map( m => ({...m , selected : m.id == selectedTileIndex  }) )
-    
-    $: selectedTile = sideTiles.at( selectedTileIndex ?? -1 ) ?? {col : -1 , row : -1 , dimensions : 0}
+    $: sideTiles =  $someTiles( page * tilesToDisplay ,tilesToDisplay)
 
-    $: console.log({selectedTile , selectedTileIndex})
+
 
     const keyUp = (e: KeyboardEvent) => {
-        selectedTileIndex = null;
+        selectedTileIndex = -1;
     } 
   
   </script>
@@ -34,7 +48,7 @@
 <svelte:body on:keyup={keyUp}  />
 <div class="side-bar">
     <div class="side-nav">
-      <button on:click={ () => page = page != 0 ? (page - 1) : page } >  👈  </button>
+      <button on:click={ () => page = Math.min(0, page += 1) }>  👈  </button>
       <b>{page}</b>
       <button on:click={ () => page += 1 } >  👉  </button>
     </div>
@@ -53,18 +67,19 @@
         
       {#each sideTiles as tile }
         <Tile 
+        dimensions={tileSetDim}
             tileSetIndex={tile.id}
-        on:click={ (event) => {selectedTileIndex = event.detail.id ; console.log( event.detail )} }
-        selected={ tile.selected }
+        on:click={ (event) => {selectedTile.set({ ...event.detail, ...tile  })} }
+        selected={ tile.id == $selectedTile?.id }
           gap={gap}
-          gridPosition={{col : tile.pagePos , row : 0}}
+          gridPosition={{col : 0 , row : tile.pagePos}}
         />
       {/each}
         <Rect
             config={{
                 listening : false,
                 x: 0,
-                y: selectedTile.col * selectedTile.dimensions,
+                y: $rectParams.y,
                 width: 16 + gap / 2,
                 height: 16 + gap / 2 ,
                 // fill: 'green',

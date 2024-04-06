@@ -9,7 +9,7 @@
     let image : HTMLImageElement | undefined = undefined;
     let handle : KonvaImage; 
 
-    export let tileSize = 16;
+    export let dimensions = 16;
 
     export let selected = false
 
@@ -37,21 +37,21 @@
     });
     function setAtributes() {
         if (!handle) return;
-        handle.width(tileSize  )
-        handle.height(tileSize );
+        handle.width(dimensions  )
+        handle.height(dimensions );
     }
 
 
-    $ : if (tileSize ){
+    $ : if (dimensions ){
         setAtributes()
     }
 
     const changeCrop = () => {
         handle.crop({
-            x: tileSize * tileCord.col,
-            y: tileSize * tileCord.row ,
-            width : tileSize ,
-            height : tileSize ,
+            x: dimensions * tileCord.col,
+            y: dimensions * tileCord.row ,
+            width : dimensions ,
+            height : dimensions ,
         })
     }
 
@@ -69,7 +69,7 @@
             col: gridPosition.col,
             row: gridPosition.row,
             id: tileSetIndex,
-            dimensions: tileSize
+            dimensions: dimensions
         } )
 
     }
@@ -87,6 +87,6 @@
     bind:handle={handle}
     config={{ 
         image , 
-        y: gridPosition.col *  (tileSize + gap )  , 
-        x :  gridPosition.row }}     
+        y: gridPosition.row *  (dimensions + gap )  , 
+        x :  gridPosition.col }}     
     />

@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { setContext } from 'svelte';
-    import { writable } from 'svelte/store';
-    import SideBar from './lib/SideBar.svelte';
-    import GridSystem from './lib/GridSystem.svelte';
-
-    
+  import { writable } from 'svelte/store';
+  import SideBar from './lib/SideBar.svelte';
+  import GridSystem from './lib/GridSystem.svelte';
+  import { setContext } from 'svelte';
+    import { nullTileState } from './lib/tile-helpers';
+  
+  
   let controlValues = writable<{
     scale: number, gap: number
   }>({
@@ -12,34 +13,27 @@
     gap : 2,
   })
 
-  const context = setContext('controler' , controlValues)
+  let selectedTile = nullTileState;
+  let gridCanva : GridSystem;
 
-  controlValues.subscribe( ({}) => {
-    
-  })
-
+  
 
 
-  const updateStore = () => {
-    // store.set({
-    //   totalCols: controlValues.y,
-    //   totalRows : controlValues.x
-    // })
-  }
 
-  let page = 0;
 
 
 </script> 
 
 <div class="main">
   <SideBar
-
+    bind:selectedTile={selectedTile}
     gap={  $controlValues.gap}
     scale={ $controlValues.scale }
   />
   <div class="stage">
     <GridSystem
+    bind:this={gridCanva}
+    on:confirm={ (tile) => gridCanva.matrixOp(tile.detail.inGrid , selectedTile.tileSheetIndex) }
       dim={{ col: 10 , row : 10} }
       gap={ $controlValues.gap}
       scale={ $controlValues.scale}
@@ -49,8 +43,8 @@
 </div>
 
 <div class="control-bar">
-  <input on:change={updateStore}  bind:value={$controlValues.scale} type="number" />  
-  <input on:change={updateStore}  bind:value={$controlValues.gap} type="number" />  
+  <input   bind:value={$controlValues.scale} type="number" />  
+  <input   bind:value={$controlValues.gap} type="number" />  
 </div>
 
 <style lang="scss" >

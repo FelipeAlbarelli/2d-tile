@@ -10,7 +10,14 @@
     let sideStage : LayerType 
 
 
-    export let selectedTile = writable(nullTileState)
+    let selectedTileWriteble = writable(nullTileState)
+
+    export let selectedTile = nullTileState;
+
+    $: {
+      selectedTile = $selectedTileWriteble
+    }
+
     export let gap : number
     export let tilesToDisplay = 10;
     export let scale : number;
@@ -28,7 +35,7 @@
 
     $: matrixToShow = matrix.slice( page * tilesToDisplay , (page + 1) * tilesToDisplay  )
 
-    const rectConfig = derived(selectedTile , (sel) => {
+    const rectConfig = derived(selectedTileWriteble , (sel) => {
       const halfGap = -gap/2;
       const y = sel.inGrid.row == -1 ? -100 :  halfGap + ( (tileSetDim + gap) * sel.inGrid.row  )
       return {
@@ -61,7 +68,7 @@
 
 
     const keyUp = (e: KeyboardEvent) => {
-      $selectedTile = nullTileState;
+      $selectedTileWriteble = nullTileState;
     } 
   
   </script>
@@ -78,7 +85,7 @@
       padding={padding}
       bind:tileSetDim={tileSetDim}
       bind:activeTile={gridActiveTile}
-      on:confirm={ tile => $selectedTile = tile.detail  }
+      on:confirm={ tile => $selectedTileWriteble = tile.detail  }
       dim={{ col: 1 , row : 10} }
       gap={ gap}
       scale={scale}

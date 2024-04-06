@@ -5,8 +5,7 @@
     import Tile from './Tile.svelte'
     import { Layer as LayerType } from 'konva/lib/Layer'
     import { Stage as StegeKonva } from 'konva/lib/Stage'
-    import { derived, writable, type Writable } from 'svelte/store';
-    import { createEventDispatcher, getContext, setContext } from 'svelte';
+    import { createEventDispatcher, getContext, onMount, setContext } from 'svelte';
     import { createEmptyMatrix, type  Cord, type InitialMatrixOptions , nullCord } from './grid-helpers';
     import { nullTileState, type TileCoreData } from './tile-helpers';
   
@@ -18,6 +17,9 @@
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
     export let scale : number
 
+    export const matrixOp = (cord: Cord , value : number) => {
+      matrix[cord.index] = value
+    }
 
     /**
      * Tile que está sendo hover pelo mouse agora
@@ -28,9 +30,6 @@
       confirm  : TileCoreData,
       context  : TileCoreData,
     }>()
-
-    $: console.log(matrix)
-
 
     let stage : StegeKonva;
     let layerStage : LayerType

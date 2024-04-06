@@ -62,6 +62,7 @@
     
     const changePagination = (change: number) => {
       page = Math.max(0  , page + change);
+      $selectedTileWriteble = nullTileState
     }
 
 

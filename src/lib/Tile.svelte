@@ -6,7 +6,7 @@
     import type { Image as KonvaImage } from "konva/lib/shapes/Image";
     import {  indexToCord , store, type TileData } from "../store";
     import type { Writable } from "svelte/store";
-    import { getTilePositionOnTileSheet, type GridContext } from "./grid-helpers";
+    import { getTilePositionOnTileSheet  } from "./grid-helpers";
 
     let image : HTMLImageElement | undefined = undefined;
     let handle : KonvaImage; 
@@ -18,14 +18,27 @@
         totalRows: 22
     }
 
+    const changeCrop = ({col,row }:{col :number , row: number}) => {
+        if ( !handle)  return;
+        handle.crop({
+            x: dimensions * col,
+            y: dimensions * row ,
+            width : dimensions ,
+            height : dimensions ,
+        })
+    }
+
     $: tileCropPosition = getTilePositionOnTileSheet({
         index : tileSetIndex , 
         sheetCols : tileSheet.totalCols ,
         sheetRows : tileSheet.totalRows
     })
 
+    $: changeCrop(tileCropPosition)
+
     const dispather = createEventDispatcher<{
-        click: TileData,
+        click: number,
+        mouse : number,
     }>()
 
     export let gap = 4
@@ -56,32 +69,19 @@
         setAtributes()
     }
 
-    const changeCrop = () => {
-        handle.crop({
-            x: dimensions * tileCropPosition.col,
-            y: dimensions * tileCropPosition.row ,
-            width : dimensions ,
-            height : dimensions ,
-        })
-    }
 
-    $ : if (handle) {
+    $ : if (handle && tileCropPosition) {
         setAtributes();
-        changeCrop()
+        changeCrop(tileCropPosition )
     }
 
     $ : if ( gridPosition && handle ) {
-        changeCrop()
+        changeCrop(tileCropPosition)
     }
 
     const click = (e : KonvaMouseEvent) => {
         console.log(tileSetIndex)
-        dispather('click' , {
-            col: gridPosition.col,
-            row: gridPosition.row,
-            id: tileSetIndex,
-            dimensions: dimensions
-        } )
+        dispather('click' , tileSetIndex )
 
     }
 

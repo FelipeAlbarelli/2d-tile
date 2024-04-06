@@ -7,7 +7,7 @@
     import { Stage as StegeKonva } from 'konva/lib/Stage'
     import { derived, writable, type Writable } from 'svelte/store';
     import { getContext, setContext } from 'svelte';
-    import { createEmptyMatrix, type GridContext, type InitialMatrixOptions  } from './grid-helpers';
+    import { createEmptyMatrix, type InitialMatrixOptions  } from './grid-helpers';
 
     export let gap : number
     export let padding = 12;
@@ -16,16 +16,20 @@
     export let initialMatrix :InitialMatrixOptions = 'none'
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
 
-    console.log({matrix , initialMatrix})
+    $: console.log(matrix)
+
 
     let stage : StegeKonva;
     let layerStage : LayerType
 
-    export let gridStore : GridContext = {
+    const gridStore = writable<{
+      mouseEvent : number
 
-      totalCols : dim.col,
-      totalRows : dim.row
-    }
+    }>({
+      mouseEvent : -1
+    })
+
+    const context = setContext('grid' , gridStore)
 
 
 

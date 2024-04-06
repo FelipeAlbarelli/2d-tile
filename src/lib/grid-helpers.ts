@@ -2,11 +2,7 @@ import { derived, writable, type Writable } from 'svelte/store';
 
 
 export type GridContext = {
-    // pointerX : number | null,
-    // pointerY : number | null,
-    // index  : number | null,
-    totalCols : number,
-    totalRows : number
+    index : number
 }
 export type InitialMatrixOptions = 'random' | 'cresc' | 'asce' | 'none';
 

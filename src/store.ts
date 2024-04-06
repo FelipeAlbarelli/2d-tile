@@ -5,6 +5,10 @@ export type Store = {
     totalCols : number,
 }
 
+export type TileInGrid = TileData & {
+    gridPosX : number,
+    gridPosY : number,
+} 
 
 export type TileData = {
     dimensions: number,

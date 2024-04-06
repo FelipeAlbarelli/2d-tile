@@ -1,25 +1,36 @@
 <script lang="ts">
-    import { someTiles, type TileData  } from '../store'
+    import { someTiles, type TileData, type TileInGrid  } from '../store'
     import { Stage, Layer, Rect , Image } from 'svelte-konva';
     import Tile from './Tile.svelte'
     import { Layer as LayerType } from 'konva/lib/Layer'
-    import { derived, writable } from 'svelte/store';
+    import { derived, writable, type Writable } from 'svelte/store';
+    import { getContext } from 'svelte';
     
-    type TileInGrid = TileData & {pagePos : number} 
-    
+
+
+    const controlerContext = getContext<
+      Writable<{
+      scale: number, gap: number, selectedTile : TileInGrid | null
+    }>
+    >('controler');
+
+    controlerContext.subscribe( s => {
+    })
+
     const selectedTile = writable<TileInGrid  | null>(null)
     const rectParams = derived(selectedTile , (sel) => {
-        console.log(sel)
         if (sel == null) {
             return {
                 y : -100,
             }
         }
         return {
-            y : (sel.dimensions + gap) * sel.pagePos
+            y : (sel.dimensions + gap) * sel.gridPosY,
+            x : (sel.dimensions + gap) * sel.gridPosX,
         }
     })
     
+    $: $controlerContext.selectedTile = $selectedTile
   
     let sideStage : LayerType
   
@@ -35,12 +46,14 @@
 
     let selectedTileIndex : number = 1;
     
-    $: sideTiles =  $someTiles( page * tilesToDisplay ,tilesToDisplay)
+    $: sideTiles =  $someTiles( page * tilesToDisplay ,tilesToDisplay);
+
+    
 
 
 
     const keyUp = (e: KeyboardEvent) => {
-        selectedTileIndex = -1;
+      $selectedTile = null;
     } 
   
   </script>
@@ -53,7 +66,7 @@
       <button on:click={ () => page += 1 } >  👉  </button>
     </div>
     <Stage 
-      config={{ width: ((16 + gap) * scale )  +  padding , height: window.innerHeight - 40 , scale : {x: 1, y : 1} }} > 
+      config={{ width: ((16 + gap) * scale )  +  padding , height: window.innerHeight - 100 , scale : {x: 1, y : 1} }} > 
       <Layer
         bind:handle={sideStage}
         config={{
@@ -69,7 +82,7 @@
         <Tile 
         dimensions={tileSetDim}
             tileSetIndex={tile.id}
-        on:click={ (event) => {selectedTile.set({ ...event.detail, ...tile  })} }
+        on:click={ (event) => {selectedTile.set({ ...event.detail, gridPosX : 0 , gridPosY : tile.pagePos  })} }
         selected={ tile.id == $selectedTile?.id }
           gap={gap}
           gridPosition={{col : 0 , row : tile.pagePos}}
@@ -100,7 +113,6 @@
   
     .side-bar {
       border: 2px solid white;
-      height: 100%;
       display: flex;
       flex-direction: column;
   

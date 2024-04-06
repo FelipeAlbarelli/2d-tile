@@ -11,7 +11,7 @@
 
     export let dimensions = 16;
 
-    export let selected = false
+    export let selected = false;
 
     const dispather = createEventDispatcher<{
         click: TileData,
@@ -19,7 +19,7 @@
 
     export let gap = 4
 
-    export let tileSetIndex = 0;
+    export let tileSetIndex =  -1;
 
     $: tileCord = indexToCord(tileSetIndex , $store)
 
@@ -82,11 +82,14 @@
 
 </script>
 
+{#if tileSetIndex >= 0}
 <Image 
     on:pointerclick={click}
     bind:handle={handle}
     config={{ 
         image , 
         y: gridPosition.row *  (dimensions + gap )  , 
-        x :  gridPosition.col }}     
-    />
+        x :  gridPosition.col 
+    }}     
+/>  
+{/if}

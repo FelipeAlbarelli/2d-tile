@@ -6,19 +6,25 @@
    import { Stage, Layer, Rect , Image } from 'svelte-konva';
     import Tile from './lib/Tile.svelte';
     import { setContext } from 'svelte';
-    import { allTiles, store, totalTiles , someTiles } from './store';
+    import { allTiles, store, totalTiles , someTiles, type TileInGrid } from './store';
   import { Layer as LayerType } from 'konva/lib/Layer'
     import { scale } from 'svelte/transition';
     import { writable } from 'svelte/store';
     import SideBar from './lib/SideBar.svelte';
+    import GridSystem from './lib/GridSystem.svelte';
 
     
-  let controlValues = writable({
+  let controlValues = writable<{
+    scale: number, gap: number, selectedTile : TileInGrid | null
+  }>({
     scale : 4,
     gap : 2,
+    selectedTile : null
   })
 
-  let sideStage : LayerType
+  const context = setContext('controler' , controlValues)
+
+
 
   const updateStore = () => {
     // store.set({
@@ -38,9 +44,11 @@
     scale={ $controlValues.scale }
   />
   <div class="stage">
-    <Stage 
-    config.width={100}
-    config={{ height: 300 }} />
+    <GridSystem
+      dim={{ col: 10 , row : 10} }
+      gap={ $controlValues.gap}
+      scale={ $controlValues.scale}
+    />
   </div>
 
 </div>
@@ -67,38 +75,10 @@
   
 
   .main {
-    height: 100vh;
-    width: 100vw;
     padding: 12px;
     display: flex;
     
   }
 
-  .side-bar {
-    border: 2px solid white;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    &:nth-child(2) {
-      display: contents
-    }
-    /* width: 100px; */
-  }
-
-  .side-nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 4px;
-    input {
-      width: 32px;
-    }
-    button {
-      padding: 8px;
-      border: 2px solid blue;
-    }
-  }
 
 </style>

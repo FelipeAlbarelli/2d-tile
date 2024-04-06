@@ -39,8 +39,10 @@
 
     let gridStore = writable<{
             pointerX : number | null,
-            pointerY : number | null
+            pointerY : number | null,
+            index  : number | null,
         }>({
+            index  : null,
             pointerX : null,
             pointerY :null
     })
@@ -65,14 +67,14 @@
     $: height = ((tileSetDim + gap) *scale * dim.row) + padding * 2
 
     const hanlderContext = (e: MouseEvent) => {
+        // console.log( $gridStore )
+        matrix[$gridStore.index!] -= 1;
         console.log( $gridStore )
     }
 
-    const logger = (e: any) => {
-        console.log(e)
-    }
-
-    const mouseEnterTile = (e : MouseEvent) => {
+    const handleClick = (e : MouseEvent) => {
+        matrix[$gridStore.index!] += 1;
+        console.log( $gridStore )
 
     }
 
@@ -84,7 +86,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div 
     on:contextmenu|preventDefault={hanlderContext}
-    on:click={() => console.log(matrix)}
+    on:click={handleClick}
     class="grid-cont"
     >
 
@@ -104,8 +106,9 @@
         
       {#each matrix as tile , index }
       {@const cords = indexToCord(index, $store)}
-        <Tile 
+        <Tile
             dimensions={tileSetDim}
+            gridIndex={index}
             tileSetIndex={tile}
             gap={gap}
             gridPosition={{ col : cords.col , row : cords.row }}

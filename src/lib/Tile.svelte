@@ -18,6 +18,7 @@
 
     const gridStore = getContext<
       Writable<{
+            index : number | null,
             pointerX : number | null,
             pointerY : number | null
     }>
@@ -37,6 +38,8 @@
         col : number,
         row : number
     }
+
+    export let gridIndex = -1;
 
     onMount(() => {
         const img = document.createElement("img");
@@ -96,16 +99,18 @@
 
 </script>
 
-{#if tileSetIndex >= 0}
+
 <Image 
     on:pointerclick={click}
     on:mouseenter={(e) => {
         $gridStore.pointerX = gridPosition.col ;
         $gridStore.pointerY = gridPosition.row;
+        $gridStore.index = gridIndex;
     }}
     on:mouseleave={(e) => {
-        $gridStore.pointerX = gridPosition.col ;
-        $gridStore.pointerY = gridPosition.row;
+        $gridStore.pointerX = null ;
+        $gridStore.index = null;
+        $gridStore.pointerY = null;
     }}
     bind:handle={handle}
     config={{ 
@@ -114,4 +119,3 @@
         x : gridPosition.col *  (dimensions + gap )
     }}     
 />  
-{/if}

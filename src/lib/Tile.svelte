@@ -1,37 +1,32 @@
 <script  lang="ts" >
-    import { onMount, tick } from "svelte";
+    import { createEventDispatcher, onMount, tick } from "svelte";
     import { Stage, Layer , Image, type KonvaMouseEvent } from "svelte-konva";
     import asset from '../assets/colored_packed.png'
     import asset2 from '../assets/colored.png'
-    import type { KonvaEventObject } from "konva/lib/Node";
     import type { Image as KonvaImage } from "konva/lib/shapes/Image";
+    import {  indexToCord , store, type TileData } from "../store";
 
     let image : HTMLImageElement | undefined = undefined;
     let handle : KonvaImage; 
 
     export let tileSize = 16;
-    export let scaleFactor = 3;
 
-    export let rows = 22;
-    export let cols = 49 ;
+    export let selected = false
+
+    const dispather = createEventDispatcher<{
+        click: TileData,
+    }>()
 
     export let gap = 4
 
+    export let tileSetIndex = 0;
 
-    export let tileCoord : {
-            col: number,
-            row: number
-    }
-    
+    $: tileCord = indexToCord(tileSetIndex , $store)
+
     export let gridPosition : {
         col : number,
         row : number
     }
-
-
-
-
-    let finalSize = scaleFactor * tileSize
 
     onMount(() => {
         const img = document.createElement("img");
@@ -41,25 +36,20 @@
         };
     });
     function setAtributes() {
-        handle.setAttrs({
-            //   scaleX: scaleFactor,
-            //   scaleY: scaleFactor,
-              custom : {
-                tileCoord,
-                gridPosition
-              }
-            });
-
+        if (!handle) return;
         handle.width(tileSize  )
         handle.height(tileSize );
-        console.log(handle.width() , handle.height() )
     }
 
 
+    $ : if (tileSize ){
+        setAtributes()
+    }
+
     const changeCrop = () => {
         handle.crop({
-            x: tileSize * tileCoord.col,
-            y: tileSize * tileCoord.row ,
+            x: tileSize * tileCord.col,
+            y: tileSize * tileCord.row ,
             width : tileSize ,
             height : tileSize ,
         })
@@ -70,12 +60,18 @@
         changeCrop()
     }
 
-    $ : if ((tileCoord.col || tileCoord.row) && handle ) {
+    $ : if ( tileCord && handle ) {
         changeCrop()
     }
 
     const click = (e : KonvaMouseEvent) => {
-        console.log(e.detail.target.getAttr('custom')  )
+        dispather('click' , {
+            col: gridPosition.col,
+            row: gridPosition.row,
+            id: tileSetIndex,
+            dimensions: tileSize
+        } )
+
     }
 
 

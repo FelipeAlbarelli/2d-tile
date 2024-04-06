@@ -5,6 +5,14 @@ export type Store = {
     totalCols : number,
 }
 
+
+export type TileData = {
+    dimensions: number,
+    id : number,
+    col : number,
+    row: number
+}
+
 export const store = writable<Store>({
     totalCols: 49,
     totalRows: 22
@@ -16,7 +24,7 @@ export const indexToCord = (index : number , store : Store) => {
     const col = index % store.totalCols;
     const row =  Math.floor( index / store.totalCols);
 
-    return {col, row , index}
+    return {col, row , id: index} as TileData
 }
 
 export const allTiles = derived( store , ({totalCols,totalRows}) => {
@@ -26,4 +34,10 @@ export const allTiles = derived( store , ({totalCols,totalRows}) => {
         result.push(indexToCord(index , {totalCols , totalRows  }))
     }
     return result
+})
+
+export const someTiles = derived( allTiles , $allTiles  => {
+    return (page : number , size : number) =>  $allTiles
+        .slice(page , page + size)
+        .map( (p,i) => ({...p , pagePos : i}) )
 })

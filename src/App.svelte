@@ -6,10 +6,11 @@
    import { Stage, Layer, Rect , Image } from 'svelte-konva';
     import Tile from './lib/Tile.svelte';
     import { setContext } from 'svelte';
-    import { allTiles, store, totalTiles } from './store';
+    import { allTiles, store, totalTiles , someTiles } from './store';
   import { Layer as LayerType } from 'konva/lib/Layer'
     import { scale } from 'svelte/transition';
     import { writable } from 'svelte/store';
+    import SideBar from './lib/SideBar.svelte';
 
     
   let controlValues = writable({
@@ -26,42 +27,16 @@
     // })
   }
 
+  let page = 0;
+
 
 </script>
 
 <div class="main">
-  <div class="side-bar">
-    <div class="side-nav">
-      <button>  👈  </button>
-      <button>  👉  </button>
-    </div>
-    <Stage 
-    config={{ width: (16 * $controlValues.scale) + 8 , height: window.innerHeight - 40 , scale : {x: 1, y : 1} }} > 
-      <Layer
-        bind:handle={sideStage}
-        config={{
-          imageSmoothingEnabled: false ,
-          y : 8,
-          x : 8,
-          scaleX : $controlValues.scale,
-          scaleY : $controlValues.scale 
-        }}
-      >
-      {#each $allTiles.filter( (a,i) => i < 5 ) as tile }
-        <!-- <Tile 
-          gridPosition={{col : tile.index , row : 0}}
-          tileCoord={{col : tile.col , row : tile.row }}
-        /> -->
-        <Tile 
-          gap={$controlValues.gap}
-          gridPosition={{col : tile.index , row : 0}}
-          tileCoord={{col : tile.col , row : tile.row }}
-        />
-      {/each}
-
-      </Layer>
-    </Stage>
-  </div>
+  <SideBar 
+    gap={  $controlValues.gap}
+    scale={ $controlValues.scale }
+  />
   <div class="stage">
     <Stage 
     config.width={100}
@@ -115,6 +90,11 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    input {
+      width: 32px;
+    }
     button {
       padding: 8px;
       border: 2px solid blue;

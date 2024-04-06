@@ -1,20 +1,33 @@
 
 <script lang="ts">
-    import { indexToCord, someTiles, store, type TileData, type TileInGrid  } from '../store'
+    import { indexToCord  } from '../store'
     import { Stage, Layer, Rect , Image } from 'svelte-konva';
     import Tile from './Tile.svelte'
     import { Layer as LayerType } from 'konva/lib/Layer'
     import { Stage as StegeKonva } from 'konva/lib/Stage'
     import { derived, writable, type Writable } from 'svelte/store';
-    import { getContext, setContext } from 'svelte';
-    import { createEmptyMatrix, type InitialMatrixOptions  } from './grid-helpers';
-
+    import { createEventDispatcher, getContext, setContext } from 'svelte';
+    import { createEmptyMatrix, type  Cord, type InitialMatrixOptions , nullCord } from './grid-helpers';
+    import { nullTileState, type TileCoreData } from './tile-helpers';
+  
     export let gap : number
     export let padding = 12;
     export let tileSetDim = 16;
     export let dim = {col : 2 , row : 2}
     export let initialMatrix :InitialMatrixOptions = 'none'
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
+    export let scale : number
+
+
+    /**
+     * Tile que está sendo hover pelo mouse agora
+     */
+    export let activeTile : TileCoreData = nullTileState
+
+    const despachante = createEventDispatcher<{
+      confirm  : TileCoreData,
+      context  : TileCoreData,
+    }>()
 
     $: console.log(matrix)
 
@@ -22,32 +35,17 @@
     let stage : StegeKonva;
     let layerStage : LayerType
 
-    const gridStore = writable<{
-      mouseEvent : number
-
-    }>({
-      mouseEvent : -1
-    })
-
-    const context = setContext('grid' , gridStore)
 
 
-
-    export let scale : number
-
-    $: width =  ((tileSetDim + gap) * scale * dim.col )  +  padding * 2;
-    $: height = ((tileSetDim + gap) *scale * dim.row) + padding * 2
+    $: width =  ((tileSetDim + (gap * 2) ) * scale * dim.col )  +  (padding * 2);
+    $: height = ((tileSetDim + (gap * 2) ) * scale * dim.row ) + padding * 2
 
     const hanlderContext = (e: MouseEvent) => {
-        // console.log( $gridStore )
-        // matrix[gridStore.index!] -= 1;
-        // console.log(gridStore )
+      despachante('context', activeTile )
     }
 
     const handleClick = (e : MouseEvent) => {
-        // matrix[gridStore.index!] += 1;
-        // console.log(gridStore )
-
+      despachante('confirm' , activeTile)
     }
 
   
@@ -79,13 +77,18 @@
       {#each matrix as tile , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
         <Tile
+            on:mouseleave={ e => activeTile = nullTileState }
+            on:mouseenter={ e => activeTile = {
+              inGrid : cords,
+              tileSheetIndex : index
+            }}
             dimensions={tileSetDim}
             tileSetIndex={tile}
             gap={gap}
             gridPosition={{ col : cords.col , row : cords.row }}
         />
       {/each}
-
+      <slot />
       </Layer>
     </Stage>
   </div>

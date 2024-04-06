@@ -1,5 +1,14 @@
 import { derived, writable, type Writable } from 'svelte/store';
 
+export type Cord = {
+    col : number, 
+    row : number,
+    index: number,
+};
+
+export const nullCord : Cord = {
+    col: -1, index : -1,row: -1
+} 
 
 export type GridContext = {
     index : number

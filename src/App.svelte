@@ -1,25 +1,15 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import colored from './assets/colored.png'
-  import Counter from './lib/Counter.svelte';
-   import { Stage, Layer, Rect , Image } from 'svelte-konva';
-    import Tile from './lib/Tile.svelte';
     import { setContext } from 'svelte';
-    import { allTiles, store, totalTiles , someTiles, type TileInGrid } from './store';
-  import { Layer as LayerType } from 'konva/lib/Layer'
-    import { scale } from 'svelte/transition';
     import { writable } from 'svelte/store';
     import SideBar from './lib/SideBar.svelte';
     import GridSystem from './lib/GridSystem.svelte';
 
     
   let controlValues = writable<{
-    scale: number, gap: number, selectedTile : TileInGrid | null
+    scale: number, gap: number
   }>({
     scale : 4,
     gap : 2,
-    selectedTile : null
   })
 
   const context = setContext('controler' , controlValues)
@@ -40,10 +30,11 @@
   let page = 0;
 
 
-</script>
+</script> 
 
 <div class="main">
-  <SideBar 
+  <SideBar
+
     gap={  $controlValues.gap}
     scale={ $controlValues.scale }
   />

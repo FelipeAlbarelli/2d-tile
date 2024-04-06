@@ -1,19 +1,23 @@
 <script lang="ts">
-    import { someTiles, type TileData, type TileInGrid  } from '../store'
-    import { Stage, Layer, Rect , Image } from 'svelte-konva';
-    import Tile from './Tile.svelte'
     import { Layer as LayerType } from 'konva/lib/Layer'
     import { derived, writable, type Writable } from 'svelte/store';
     import { getContext } from 'svelte';
     import GridSystem from './GridSystem.svelte';
-    import { createEmptyMatrix } from './grid-helpers';
+    import { createEmptyMatrix, type Cord } from './grid-helpers';
+    import { nullTileState, type TileCoreData } from './tile-helpers';
+    import { Group, Rect } from 'svelte-konva';
     
-    export let scale : number
+    let sideStage : LayerType 
 
+
+    export let selectedTile = writable(nullTileState)
     export let gap : number
-    export let padding = 12;
     export let tilesToDisplay = 10;
-    export let tileSetDim = 16;
+    export let scale : number;
+    export let padding : number = 0;
+    export let tileSetDim : number = 16;
+
+    let gridActiveTile : TileCoreData
 
     const tileSheet = {
         totalCols: 49,
@@ -24,53 +28,40 @@
 
     $: matrixToShow = matrix.slice( page * tilesToDisplay , (page + 1) * tilesToDisplay  )
 
-    const controlerContext = getContext<
-      Writable<{
-      scale: number, gap: number, selectedTile : TileInGrid | null
-    }>
-    >('controler');
+    const rectConfig = derived(selectedTile , (sel) => {
+      const halfGap = -gap/2;
+      const y = sel.inGrid.row == -1 ? -100 :  halfGap + ( (tileSetDim + gap) * sel.inGrid.row  )
+      return {
+        x: halfGap,
+        y,
+        width: tileSetDim + gap,
+        height: tileSetDim + gap,
+        // fill: 'green',
+        stroke: 'white',
+        strokeWidth: 0.5,
 
-    controlerContext.subscribe( s => {
-    })
-
-    const selectedTile = writable<TileInGrid  | null>(null)
-    const rectParams = derived(selectedTile , (sel) => {
-        if (sel == null) {
-            return {
-                y : -100,
-            }
-        }
-        return {
-            y : (sel.dimensions + gap) * sel.gridPosY,
-            x : (sel.dimensions + gap) * sel.gridPosX,
-        }
+      }
     })
     
-    $: $controlerContext.selectedTile = $selectedTile
   
-    let sideStage : LayerType
   
 
     let page = 0;
 
-    $: matrixSliceToShow = matrix.slice(  )
 
 
-    let selectedTileIndex : number = 1;
     
-    $: sideTiles =  $someTiles( page * tilesToDisplay ,tilesToDisplay);
 
     
     const changePagination = (change: number) => {
       page = Math.max(0  , page + change);
-      $controlerContext.selectedTile = null;
     }
 
 
 
 
     const keyUp = (e: KeyboardEvent) => {
-      $selectedTile = null;
+      $selectedTile = nullTileState;
     } 
   
   </script>
@@ -84,10 +75,19 @@
     </div>
     <GridSystem 
       matrix={matrixToShow}
+      padding={padding}
+      bind:tileSetDim={tileSetDim}
+      bind:activeTile={gridActiveTile}
+      on:confirm={ tile => $selectedTile = tile.detail  }
       dim={{ col: 1 , row : 10} }
-      gap={ $controlerContext.gap}
-      scale={ $controlerContext.scale}
+      gap={ gap}
+      scale={scale}
     >
+      <Group >
+        <Rect 
+          config={$rectConfig}
+        />
+      </Group>
     </GridSystem>
   </div>
 

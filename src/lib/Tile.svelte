@@ -4,7 +4,6 @@
     import asset from '../assets/colored_packed.png'
     import asset2 from '../assets/colored.png'
     import type { Image as KonvaImage } from "konva/lib/shapes/Image";
-    import {  indexToCord , store, type TileData } from "../store";
     import type { Writable } from "svelte/store";
     import { getTilePositionOnTileSheet  } from "./grid-helpers";
 
@@ -91,16 +90,8 @@
 
 <Image 
     on:pointerclick={click}
-    on:mouseenter={(e) => {
-        // gridStore.pointerX = gridPosition.col ;
-        // gridStore.pointerY = gridPosition.row;
-        // gridStore.index = gridIndex;
-    }}
-    on:mouseleave={(e) => {
-        // gridStore.pointerX = null ;
-        // gridStore.index = null;
-        // gridStore.pointerY = null;
-    }}
+    on:mouseenter
+    on:mouseleave
     bind:handle={handle}
     config={{ 
         image , 

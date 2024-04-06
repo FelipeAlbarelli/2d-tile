@@ -5,18 +5,6 @@ export type Store = {
     totalCols : number,
 }
 
-export type TileInGrid = TileData & {
-    gridPosX : number,
-    gridPosY : number,
-} 
-
-export type TileData = {
-    dimensions: number,
-    id : number,
-    col : number,
-    row: number
-}
-
 export const store = writable<Store>({
     totalCols: 49,
     totalRows: 22
@@ -30,7 +18,7 @@ export const indexToCord = ( {totalCols,index,totalRows} : {
     const col = index % totalCols;
     const row =  Math.floor( index / totalCols);
 
-    return {col, row , id: index} as TileData
+    return {col, row , index} 
 }
 
 export const allTiles = derived( store , ({totalCols,totalRows}) => {

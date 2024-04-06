@@ -49,6 +49,10 @@
     $: sideTiles =  $someTiles( page * tilesToDisplay ,tilesToDisplay);
 
     
+    const changePagination = (change: number) => {
+      page = Math.max(0  , page + change);
+      $controlerContext.selectedTile = null;
+    }
 
 
 
@@ -61,9 +65,9 @@
 <svelte:body on:keyup={keyUp}  />
 <div class="side-bar">
     <div class="side-nav">
-      <button on:click={ () => page = Math.min(0, page += 1) }>  👈  </button>
+      <button on:click={ () => changePagination(-1) }>  👈  </button>
       <b>{page}</b>
-      <button on:click={ () => page += 1 } >  👉  </button>
+      <button on:click={ () =>  changePagination(1)} >  👉  </button>
     </div>
     <Stage 
       config={{ width: ((16 + gap) * scale )  +  padding , height: window.innerHeight - 100 , scale : {x: 1, y : 1} }} > 

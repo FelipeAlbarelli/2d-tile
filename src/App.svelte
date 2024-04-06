@@ -24,6 +24,10 @@
 
   const context = setContext('controler' , controlValues)
 
+  controlValues.subscribe( ({}) => {
+    
+  })
+
 
 
   const updateStore = () => {

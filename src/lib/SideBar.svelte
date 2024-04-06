@@ -85,7 +85,7 @@
       padding={padding}
       bind:tileSetDim={tileSetDim}
       bind:activeTile={gridActiveTile}
-      on:confirm={ tile => $selectedTileWriteble = tile.detail  }
+      on:confirm={ tile => {$selectedTileWriteble = tile.detail  ; console.log( tile.detail )  } }
       dim={{ col: 1 , row : 10} }
       gap={ gap}
       scale={scale}

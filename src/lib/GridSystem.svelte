@@ -73,16 +73,16 @@
         }}
       >
         
-      {#each matrix as tile , index }
+      {#each matrix as tileSheetIndex , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
         <Tile
             on:mouseleave={ e => activeTile = nullTileState }
             on:mouseenter={ e => activeTile = {
               inGrid : cords,
-              tileSheetIndex : index
+              tileSheetIndex,
             }}
             dimensions={tileSetDim}
-            tileSetIndex={tile}
+            tileSetIndex={tileSheetIndex}
             gap={gap}
             gridPosition={{ col : cords.col , row : cords.row }}
         />

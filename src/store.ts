@@ -24,9 +24,11 @@ export const store = writable<Store>({
 
 export const totalTiles = derived( store , ({totalCols,totalRows}) => totalCols *  totalRows  )
 
-export const indexToCord = (index : number , store : Store) => {
-    const col = index % store.totalCols;
-    const row =  Math.floor( index / store.totalCols);
+export const indexToCord = ( {totalCols,index,totalRows} : {
+        index : number , totalCols : number , totalRows: number
+    }) => {
+    const col = index % totalCols;
+    const row =  Math.floor( index / totalCols);
 
     return {col, row , id: index} as TileData
 }
@@ -35,7 +37,7 @@ export const allTiles = derived( store , ({totalCols,totalRows}) => {
     const total = totalCols * totalRows;
     const result = [];
     for (let index = 0; index < total; index++) {
-        result.push(indexToCord(index , {totalCols , totalRows  }))
+        result.push(indexToCord( {index, totalCols , totalRows  }))
     }
     return result
 })
@@ -45,3 +47,5 @@ export const someTiles = derived( allTiles , $allTiles  => {
         .slice(page , page + size)
         .map( (p,i) => ({...p , pagePos : i}) )
 })
+
+

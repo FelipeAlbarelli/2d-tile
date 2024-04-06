@@ -6,23 +6,23 @@
     import type { Image as KonvaImage } from "konva/lib/shapes/Image";
     import {  indexToCord , store, type TileData } from "../store";
     import type { Writable } from "svelte/store";
+    import { getTilePositionOnTileSheet, type GridContext } from "./grid-helpers";
 
     let image : HTMLImageElement | undefined = undefined;
     let handle : KonvaImage; 
+    export let tileSetIndex =  -1;
 
     export let dimensions = 16;
+    const tileSheet = {
+        totalCols: 49,
+        totalRows: 22
+    }
 
-    export let selected = false;
-
-
-
-    const gridStore = getContext<
-      Writable<{
-            index : number | null,
-            pointerX : number | null,
-            pointerY : number | null
-    }>
-    >('grid');
+    $: tileCropPosition = getTilePositionOnTileSheet({
+        index : tileSetIndex , 
+        sheetCols : tileSheet.totalCols ,
+        sheetRows : tileSheet.totalRows
+    })
 
     const dispather = createEventDispatcher<{
         click: TileData,
@@ -30,16 +30,13 @@
 
     export let gap = 4
 
-    export let tileSetIndex =  -1;
 
-    $: tileCord = indexToCord(tileSetIndex , $store)
 
     export let gridPosition : {
         col : number,
         row : number
     }
 
-    export let gridIndex = -1;
 
     onMount(() => {
         const img = document.createElement("img");
@@ -61,8 +58,8 @@
 
     const changeCrop = () => {
         handle.crop({
-            x: dimensions * tileCord.col,
-            y: dimensions * tileCord.row ,
+            x: dimensions * tileCropPosition.col,
+            y: dimensions * tileCropPosition.row ,
             width : dimensions ,
             height : dimensions ,
         })
@@ -73,11 +70,12 @@
         changeCrop()
     }
 
-    $ : if ( tileCord && handle ) {
+    $ : if ( gridPosition && handle ) {
         changeCrop()
     }
 
     const click = (e : KonvaMouseEvent) => {
+        console.log(tileSetIndex)
         dispather('click' , {
             col: gridPosition.col,
             row: gridPosition.row,
@@ -87,15 +85,6 @@
 
     }
 
-    const mouseEnter = (e: KonvaMouseEvent) => {
-        
-    }
-
-
-    // $ : if (tileCoord.col || tileCoord.row ) {
-    //     handleCircleClick()
-    // } 
-
 
 </script>
 
@@ -103,14 +92,14 @@
 <Image 
     on:pointerclick={click}
     on:mouseenter={(e) => {
-        $gridStore.pointerX = gridPosition.col ;
-        $gridStore.pointerY = gridPosition.row;
-        $gridStore.index = gridIndex;
+        // gridStore.pointerX = gridPosition.col ;
+        // gridStore.pointerY = gridPosition.row;
+        // gridStore.index = gridIndex;
     }}
     on:mouseleave={(e) => {
-        $gridStore.pointerX = null ;
-        $gridStore.index = null;
-        $gridStore.pointerY = null;
+        // gridStore.pointerX = null ;
+        // gridStore.index = null;
+        // gridStore.pointerY = null;
     }}
     bind:handle={handle}
     config={{ 

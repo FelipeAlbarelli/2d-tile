@@ -5,8 +5,24 @@
     import { Layer as LayerType } from 'konva/lib/Layer'
     import { derived, writable, type Writable } from 'svelte/store';
     import { getContext } from 'svelte';
+    import GridSystem from './GridSystem.svelte';
+    import { createEmptyMatrix } from './grid-helpers';
     
+    export let scale : number
 
+    export let gap : number
+    export let padding = 12;
+    export let tilesToDisplay = 10;
+    export let tileSetDim = 16;
+
+    const tileSheet = {
+        totalCols: 49,
+        totalRows: 22
+    }
+
+    const matrix = createEmptyMatrix( tileSheet.totalCols * tileSheet.totalRows , 'cresc' )
+
+    $: matrixToShow = matrix.slice( page * tilesToDisplay , (page + 1) * tilesToDisplay  )
 
     const controlerContext = getContext<
       Writable<{
@@ -37,12 +53,8 @@
 
     let page = 0;
 
-    export let scale : number
+    $: matrixSliceToShow = matrix.slice(  )
 
-    export let gap : number
-    export let padding = 12;
-    export let tilesToDisplay = 10;
-    export let tileSetDim = 16;
 
     let selectedTileIndex : number = 1;
     
@@ -53,6 +65,7 @@
       page = Math.max(0  , page + change);
       $controlerContext.selectedTile = null;
     }
+
 
 
 
@@ -69,45 +82,13 @@
       <b>{page}</b>
       <button on:click={ () =>  changePagination(1)} >  👉  </button>
     </div>
-    <Stage 
-      config={{ width: ((16 + gap) * scale )  +  padding , height: window.innerHeight - 100 , scale : {x: 1, y : 1} }} > 
-      <Layer
-        bind:handle={sideStage}
-        config={{
-          imageSmoothingEnabled: false ,
-          y : 8,
-          x : 8,
-          scaleX : scale,
-          scaleY : scale 
-        }}
-      >
-        
-      {#each sideTiles as tile }
-        <Tile 
-        dimensions={tileSetDim}
-            tileSetIndex={tile.id}
-        on:click={ (event) => {selectedTile.set({ ...event.detail, gridPosX : 0 , gridPosY : tile.pagePos  })} }
-        selected={ tile.id == $selectedTile?.id }
-          gap={gap}
-          gridPosition={{col : 0 , row : tile.pagePos}}
-        />
-      {/each}
-        <Rect
-            config={{
-                listening : false,
-                x: 0,
-                y: $rectParams.y,
-                width: 16 + gap / 2,
-                height: 16 + gap / 2 ,
-                // fill: 'green',
-                stroke: '#008',
-                strokeWidth: 1,
-                z: 2
-            }} 
-
-        />
-      </Layer>
-    </Stage>
+    <GridSystem 
+      matrix={matrixToShow}
+      dim={{ col: 1 , row : 10} }
+      gap={ $controlerContext.gap}
+      scale={ $controlerContext.scale}
+    >
+    </GridSystem>
   </div>
 
 

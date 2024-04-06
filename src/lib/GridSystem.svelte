@@ -7,74 +7,42 @@
     import { Stage as StegeKonva } from 'konva/lib/Stage'
     import { derived, writable, type Writable } from 'svelte/store';
     import { getContext, setContext } from 'svelte';
-
-
-    const createEmptyMatrix = (n : number , options : {random? : number} = {}) => {
-        const result = [];
-        for (let index = 0; index < n; index++) {
-            if (options.random != undefined) {
-                result.push( Math.floor( Math.random() * options.random) )            
-            } else {
-                result.push(-1)            
-            }
-        }
-        return result
-    }
-
-
-    const selectedTile = writable<TileInGrid  | null>(null);
-    
-    let stage : StegeKonva;
-
-
-    const controlerContext = getContext<
-      Writable<{
-      scale: number, gap: number, selectedTile : null  
-    }>
-    >('controler');
-
-    controlerContext.subscribe( s => {
-      console.log(s)
-    })
-
-    let gridStore = writable<{
-            pointerX : number | null,
-            pointerY : number | null,
-            index  : number | null,
-        }>({
-            index  : null,
-            pointerX : null,
-            pointerY :null
-    })
-
-    const context = setContext('grid' , gridStore)
-
-    gridStore.subscribe( ({pointerX,pointerY}) => {
-    })
-
-    
-    let sideStage : LayerType
-    export let scale : number
+    import { createEmptyMatrix, type GridContext, type InitialMatrixOptions  } from './grid-helpers';
 
     export let gap : number
     export let padding = 12;
     export let tileSetDim = 16;
     export let dim = {col : 2 , row : 2}
-    export let matrix = createEmptyMatrix( dim.col * dim.row , {random: 10})
+    export let initialMatrix :InitialMatrixOptions = 'none'
+    export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
 
+    console.log({matrix , initialMatrix})
+
+    let stage : StegeKonva;
+    let layerStage : LayerType
+
+    export let gridStore : GridContext = {
+
+      totalCols : dim.col,
+      totalRows : dim.row
+    }
+
+
+
+    export let scale : number
 
     $: width =  ((tileSetDim + gap) * scale * dim.col )  +  padding * 2;
     $: height = ((tileSetDim + gap) *scale * dim.row) + padding * 2
 
     const hanlderContext = (e: MouseEvent) => {
         // console.log( $gridStore )
-        matrix[$gridStore.index!] -= 1;
-        console.log( $gridStore )
+        // matrix[gridStore.index!] -= 1;
+        // console.log(gridStore )
     }
 
     const handleClick = (e : MouseEvent) => {
-        matrix[$gridStore.index!] += 1;
-        console.log( $gridStore )
+        // matrix[gridStore.index!] += 1;
+        // console.log(gridStore )
 
     }
 
@@ -94,7 +62,7 @@
         bind:ref={stage}
          config={{ width:width, height: height , scale : {x: 1, y : 1} }} > 
       <Layer
-        bind:handle={sideStage}
+        bind:handle={layerStage}
         config={{
           imageSmoothingEnabled: false ,
           y : 8,
@@ -105,10 +73,9 @@
       >
         
       {#each matrix as tile , index }
-      {@const cords = indexToCord(index, $store)}
+      {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
         <Tile
             dimensions={tileSetDim}
-            gridIndex={index}
             tileSetIndex={tile}
             gap={gap}
             gridPosition={{ col : cords.col , row : cords.row }}

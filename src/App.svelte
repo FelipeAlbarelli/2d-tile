@@ -4,19 +4,18 @@
   import GridSystem from './lib/GridSystem.svelte';
   import { setContext } from 'svelte';
     import { nullTileState } from './lib/tile-helpers';
+	import Header from './lib/maincomponents/Header.svelte';
+	import SimpleCanva from './pages/SimpleCanva.svelte';
+  import { globalGridConfig } from  './stores/global_store'
+  import { currentComponent } from './stores/nav_store'
   
-  
-  let controlValues = writable<{
-    scale: number, gap: number
-  }>({
-    scale : 4,
-    gap : 2,
-  })
 
   let selectedTile = nullTileState;
   let gridCanva : GridSystem;
 
-  
+  // currentComponent.subscribe( (s) => {
+  //   console.log(s)
+  // })
 
 
 
@@ -25,26 +24,16 @@
 </script> 
 
 <div class="main">
-  <SideBar
-    bind:selectedTile={selectedTile}
-    gap={  $controlValues.gap}
-    scale={ $controlValues.scale }
-  />
-  <div class="stage">
-    <GridSystem
-    bind:this={gridCanva}
-    on:confirm={ (tile) => gridCanva.matrixOp(tile.detail.inGrid , selectedTile.tileSheetIndex) }
-      dim={{ col: 10 , row : 10} }
-      gap={ $controlValues.gap}
-      scale={ $controlValues.scale}
-    />
-  </div>
+  <Header></Header>
+
+  <svelte:component this={$currentComponent} ></svelte:component>
+  <!-- <SimpleCanva></SimpleCanva> -->
 
 </div>
 
 <div class="control-bar">
-  <input   bind:value={$controlValues.scale} type="number" />  
-  <input   bind:value={$controlValues.gap} type="number" />  
+  <input   bind:value={$globalGridConfig.scale} type="number" />  
+  <input   bind:value={$globalGridConfig.gap  } type="number" />  
 </div>
 
 <style lang="scss" >
@@ -61,12 +50,11 @@
     }
   }
 
-  
-
   .main {
-    padding: 12px;
     display: flex;
-    
+    flex-direction: column;
+    max-height: 90vh;
+    // max-height: 100vh;
   }
 
 

@@ -1,5 +1,10 @@
 import { nullCord, type Cord } from "./grid-helpers";
 
+export type TileGridConfig = {
+    padding: number,
+    gap: number,
+    scale: number
+}
 
 export type TileCoreData = {
     inGrid : Cord,

@@ -8,6 +8,7 @@
     import { createEventDispatcher, getContext, onMount, setContext } from 'svelte';
     import { createEmptyMatrix, type  Cord, type InitialMatrixOptions , nullCord } from './grid-helpers';
     import { nullTileState, type TileCoreData } from './tile-helpers';
+	import SelectibleRect from './SelectibleRect.svelte';
   
     export let gap : number
     export let padding = 12;
@@ -51,8 +52,21 @@
       despachante('confirm' , activeTile)
     }
 
-  
-  </script>
+  let rectConfig = {
+      start : {
+        x: 0 , y : 0
+      },
+      end : {
+        x : 0 , y: 0
+      }
+  }
+  let tileDragStart : null | TileCoreData = null
+  let tileDragEnd : null | TileCoreData = null
+
+  $: console.log({
+    tileDragStart , tileDragEnd
+  })
+</script>
 
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -79,12 +93,15 @@
         
       {#each matrix as tileSheetIndex , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
+      {@const thisTileData = { inGrid : cords, tileSheetIndex, } }
         <Tile
             on:mouseleave={ e => activeTile = nullTileState }
             on:mouseenter={ e => activeTile = {
               inGrid : cords,
               tileSheetIndex,
             }}
+            on:mousedown={ e => tileDragStart = thisTileData }
+            on:mouseup={ e => tileDragEnd = thisTileData }
             dimensions={tileSetDim}
             tileSetIndex={tileSheetIndex}
             gap={gap}
@@ -92,6 +109,11 @@
         />
       {/each}
       <slot />
+
+      <SelectibleRect
+        topLeft={tileDragStart?.inGrid}
+        {gap} tileSetDim={16}
+      ></SelectibleRect>
       </Layer>
     </Stage>
   </div>

@@ -79,10 +79,6 @@
     }
 
     const click = (e : KonvaMouseEvent) => {
-        console.log({
-            tileSetIndex,
-            tileCropPosition
-        })
         dispather('click' , tileSetIndex )
 
     }
@@ -95,8 +91,12 @@
     on:pointerclick={click}
     on:mouseenter
     on:mouseleave
+    on:mousedown
+    on:mousemove
+    on:mouseup
     bind:handle={handle}
     config={{ 
+        draggble : true,
         image , 
         y:  gridPosition.row *  (dimensions + gap )  , 
         x : gridPosition.col *  (dimensions + gap )

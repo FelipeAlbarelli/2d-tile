@@ -49,24 +49,13 @@
 
       }
     })
-    
-  
-  
 
     let page = 0;
 
-
-
-    
-
-    
     const changePagination = (change: number) => {
       page = Math.max(0  , page + change);
       $selectedTileWriteble = nullTileState
     }
-
-
-
 
     const keyUp = (e: KeyboardEvent) => {
       $selectedTileWriteble = nullTileState;
@@ -86,7 +75,7 @@
       padding={padding}
       bind:tileSetDim={tileSetDim}
       bind:activeTile={gridActiveTile}
-      on:confirm={ tile => {$selectedTileWriteble = tile.detail  ; console.log( tile.detail )  } }
+      on:confirm={ tile => {$selectedTileWriteble = tile.detail  ;  } }
       dim={{ col: 1 , row : 10} }
       gap={ gap}
       scale={scale}

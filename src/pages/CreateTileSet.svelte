@@ -12,18 +12,6 @@
     let totalTiles = 1
     let tilesInfos = [{}]
 
-    let tileSetToShow = 20
-
-    let pointer = 0    
-
-    let interval = setInterval( () => {
-        pointer = (pointer + 1) % 3 ;
-        tileSetToShow = 20 + pointer
-
-    } , 500)
-
-
-
 
 </script> 
 
@@ -36,7 +24,7 @@
         
         </button>
         <SingleTile 
-            tilesheetIndex={tileSetToShow}
+            tilesheetIndex={0}
             gap={1} scale={2}
         />
     </div>

@@ -14,10 +14,14 @@
     export let tileSetDim = 16;
     export let dim = {col : 2 , row : 2}
     export let initialMatrix :InitialMatrixOptions = 'none'
+
+
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
+
+    
     export let scale : number
 
-    export const matrixOp = (cord: Cord , value : number) => {
+    export const matrixSetTile = (cord: Cord , value : number) => {
       matrix[cord.index] = value
     }
 
@@ -98,7 +102,8 @@
 .grid-cont {
     display: flex;
     padding: 12px;
-    border: 2px solid white;
+    // border: 2px solid white;
+    // width: 100%;
 }
   
 </style>

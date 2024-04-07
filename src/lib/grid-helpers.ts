@@ -48,6 +48,6 @@ export const getTilePositionOnTileSheet = ({index, sheetCols,sheetRows} : {index
     }
     return {
         col : index % sheetCols,
-        row: Math.floor( index / sheetRows )
+        row: Math.floor(index / sheetCols)
     }
 }

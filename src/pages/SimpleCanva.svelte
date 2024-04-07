@@ -30,7 +30,7 @@
     <div class="stage">
       <GridSystem
       bind:this={gridCanva}
-      on:confirm={ (tile) => gridCanva.matrixOp(tile.detail.inGrid , selectedTile.tileSheetIndex) }
+      on:confirm={ (tile) => gridCanva.matrixSetTile(tile.detail.inGrid , selectedTile.tileSheetIndex) }
         dim={{ col: 10 , row : 10} }
         gap={ $globalGridConfig.gap}
         scale={ $globalGridConfig.scale}

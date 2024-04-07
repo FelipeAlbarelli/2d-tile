@@ -79,7 +79,10 @@
     }
 
     const click = (e : KonvaMouseEvent) => {
-        console.log(tileSetIndex)
+        console.log({
+            tileSetIndex,
+            tileCropPosition
+        })
         dispather('click' , tileSetIndex )
 
     }

@@ -6,21 +6,37 @@
 
     export let tileSetDim : number;
     export let gap : number;
+    $: halfGap = gap/2;
 
     export let topLeft : Cord | null = null;
+    export let activeTile : Cord | null = null;
     export let botRight : Cord | null = null;
 
-    $: halfGap = gap/2;
-    $: y =  topLeft ? halfGap + ( (tileSetDim + gap) * topLeft?.row ) : -100
+    const getXY = (c : Cord | null) => ({
+        x : c ? -halfGap + ( ( tileSetDim + gap ) * c.col  ) : -100,
+        y:  c ? -halfGap + ( (tileSetDim + gap) * c.row ) : -100
+    })
+
+
+    $: topLeftXY = getXY(topLeft);
+
+    $: activeXY = getXY(activeTile);
+
 
     $: rectConfig = {
-        x : halfGap,
-        y,
-        width: tileSetDim + gap,
-        height: tileSetDim + gap,
+        ...topLeftXY,
+        width: tileSetDim + halfGap,
+        height: tileSetDim + halfGap,
         stroke: 'white',
-        strokeWidth: 0.5,
-        
+        strokeWidth: 1,
+    }
+
+    $: activeConfig = {
+        ...activeXY,
+        width: tileSetDim + halfGap,
+        height: tileSetDim + halfGap,
+        stroke: 'red',
+        strokeWidth: 1,
     }
 
 
@@ -30,4 +46,6 @@
 <Rect
     config={rectConfig}
 ></Rect>
-
+<Rect
+    config={activeConfig}
+></Rect>

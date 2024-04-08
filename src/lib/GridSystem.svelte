@@ -77,7 +77,8 @@
     class="grid-cont"
     >
 
-    <Stage 
+    <Stage
+        on:mouseleave={ e => activeTile = nullTileState }
         bind:ref={stage}
          config={{ width:width, height: height , scale : {x: 1, y : 1} }} > 
       <Layer
@@ -95,7 +96,6 @@
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
       {@const thisTileData = { inGrid : cords, tileSheetIndex, } }
         <Tile
-            on:mouseleave={ e => activeTile = nullTileState }
             on:mouseenter={ e => activeTile = {
               inGrid : cords,
               tileSheetIndex,
@@ -112,6 +112,7 @@
 
       <SelectibleRect
         topLeft={tileDragStart?.inGrid}
+        activeTile={activeTile?.inGrid}
         {gap} tileSetDim={16}
       ></SelectibleRect>
       </Layer>

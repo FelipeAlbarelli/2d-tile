@@ -18,13 +18,19 @@
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
     export let scale : number
 
-    export const matrixSetTile = (cord: Cord , value : number) => {
-      matrix[cord.index] = value
+    export let selectedTiles : number[] = [];
+
+    export const matrixSetTile = (cord: Cord , value : Partial<{ 
+      tileSetIndex: number,
+      selected: boolean,
+     }> ) => {
+      matrix[cord.index] = {
+        ...matrix[cord.index],
+        ...value
+      }
     }
 
-    let tileDragStart : null | TileCoreData = null
-    let tileDragEnd : null | TileCoreData = null
-    let mouseIsDown = false;
+
     $: width =  ((tileSetDim + (gap * 2) ) * scale * dim.col )  +  (padding * 2);
     $: height = ((tileSetDim + (gap * 2) ) * scale * dim.row ) + padding * 2
 
@@ -36,18 +42,16 @@
     const despachante = createEventDispatcher<{
       confirm  : TileCoreData,
       context  : TileCoreData,
+      click : TileCoreData;
     }>()
 
     let stage : StegeKonva;
     let layerStage : LayerType
 
-    let selectedTile : Cord | null;
 
-    $: selectedTileBot = mouseIsDown ? activeTile.inGrid : selectedTile
 
     const hanlderContext = (e: MouseEvent) => {
       despachante('context', activeTile );
-      tileDragStart = null;
     }
 
     const handleClick = (e : MouseEvent) => {
@@ -55,9 +59,6 @@
     }
 
 
-  $: console.log({
-    mouseIsDown
-  })
 </script>
 
 
@@ -66,7 +67,6 @@
 <div 
     on:contextmenu|preventDefault={hanlderContext}
     on:click={handleClick}
-    on:mouseup={ e => {tileDragEnd = activeTile ; mouseIsDown = false; }}
     class="grid-cont"
     >
 
@@ -86,34 +86,26 @@
       >
 
 
-      {#each matrix as tileSheetIndex , index }
+      {#each matrix as tile , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
-      {@const thisTileData = { inGrid : cords, tileSheetIndex, } }
         <Tile
             on:mouseenter={ e => activeTile = {
               inGrid : cords,
-              tileSheetIndex,
+              tileSheetIndex : tile.tileSetIndex,
             }}
-            on:mousedown={ e =>{ selectedTile = cords; mouseIsDown = true  }}
+            on:click={ e => {
+              despachante('click' , {
+              inGrid : cords,
+              tileSheetIndex : tile.tileSetIndex,
+            })}}
+            selected={tile.selected}
             dimensions={tileSetDim}
-            tileSetIndex={tileSheetIndex}
+            tileSetIndex={tile.tileSetIndex}
             gap={gap}
             gridPosition={{ col : cords.col , row : cords.row }}
         />
       {/each}
       <slot />
-
-        <SelectibleRect
-          topLeft={selectedTile}
-          botRight={selectedTileBot}
-          {gap} tileSetDim={16}
-        ></SelectibleRect>
-        <SelectibleRect
-          color={'blue'}
-          topLeft={selectedTile}
-          botRight={tileDragEnd?.inGrid}
-          {gap} tileSetDim={16}
-        ></SelectibleRect>
       </Layer>
     </Stage>
   </div>

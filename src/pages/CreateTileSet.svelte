@@ -1,16 +1,21 @@
 <script lang="ts">
     import GridSystem from '../lib/GridSystem.svelte';
     import SingleTile from '../lib/SingleTile.svelte';
-    import { nullTileState } from '../lib/tile-helpers';
+    import { nullTileState, type TileCoreData } from '../lib/tile-helpers';
     
     
 
 
-    let selectedTile = nullTileState;
     let gridCanva : GridSystem;
 
-    let totalTiles = 1
-    let tilesInfos = [{}]
+   
+    const leftClickOnMain = (tile : TileCoreData) => {
+        gridCanva.matrixSetTile( tile.inGrid , {selected : true})
+    }
+    const rightClickOnMain = (tile : TileCoreData) => {
+        gridCanva.matrixSetTile( tile.inGrid , {selected : false})
+    }
+
 
 
 </script> 
@@ -18,7 +23,6 @@
 <div class="container">
     <div class="side">
         <button
-            on:click={ () => tilesInfos.push({})}
         >
             ➕
         
@@ -37,7 +41,9 @@
     </div>
     <div class="main">
       <GridSystem
-      bind:this={gridCanva}
+        on:confirm={ e => leftClickOnMain(e.detail)  }
+        on:context={ e => rightClickOnMain(e.detail)  }
+        bind:this={gridCanva}
         dim={{ col: 49 , row : 22} }
         initialMatrix='cresc'
         gap={1}

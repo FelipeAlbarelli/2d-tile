@@ -18,21 +18,24 @@ export type InitialMatrixOptions = 'random' | 'cresc' | 'asce' | 'none';
 export const createEmptyMatrix = (n : number , options : 'random' | 'cresc' | 'asce' | 'none' = 'none' ) => {
     const result = [];
     for (let index = 0; index < n; index++) {
-        let item : number;
+        let tileSetIndex: number;
         if (options == 'random') {
             console.log(options)
-            item =  Math.floor( Math.random() * 100)         
+            tileSetIndex = Math.floor(Math.random() * 100)         
         } else if (options == 'asce') {
             console.log(options)
-            item = n -index;
+            tileSetIndex = n - index;
         } else if (options == 'cresc') {
             console.log(options)
-            item = index;
+            tileSetIndex = index;
         } else {
             console.log(options)
-            item = -1;            
+            tileSetIndex = -1;            
         }
-        result.push(item)
+        result.push({
+            tileSetIndex,
+            selected: false
+        })
     }
     return result
 }

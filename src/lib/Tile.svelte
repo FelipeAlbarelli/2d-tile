@@ -1,6 +1,6 @@
 <script  lang="ts" >
     import { createEventDispatcher, getContext, onMount, tick } from "svelte";
-    import { Stage, Layer , Image, type KonvaMouseEvent } from "svelte-konva";
+    import { Stage, Layer , Image, type KonvaMouseEvent, Rect } from "svelte-konva";
     import asset from '../assets/colored_packed.png'
     import asset2 from '../assets/colored.png'
     import type { Image as KonvaImage } from "konva/lib/shapes/Image";
@@ -10,6 +10,8 @@
     let image : HTMLImageElement | undefined = undefined;
     let handle : KonvaImage; 
     export let tileSetIndex =  -1;
+
+    export let selected = false;
 
     export let dimensions = 16;
     const tileSheet = {
@@ -80,13 +82,23 @@
 
     const click = (e : KonvaMouseEvent) => {
         dispather('click' , tileSetIndex )
-
     }
 
 
 </script>
 
 
+    <Rect 
+        config={{
+            y:  gridPosition.row *  (dimensions + gap )  , 
+            x : gridPosition.col *  (dimensions + gap ),
+            width : dimensions,
+            height : dimensions,
+            stroke: 'white',
+            strokeWidth: selected ? 1 : 0
+        }}
+    >
+    </Rect>
 <Image 
     on:pointerclick={click}
     on:mouseenter
@@ -96,9 +108,10 @@
     on:mouseup
     bind:handle={handle}
     config={{ 
-        draggble : true,
         image , 
         y:  gridPosition.row *  (dimensions + gap )  , 
         x : gridPosition.col *  (dimensions + gap )
     }}     
-/>  
+/> 
+
+

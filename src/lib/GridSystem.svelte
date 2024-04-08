@@ -91,7 +91,11 @@
           scaleY : scale 
         }}
       >
-        
+      <SelectibleRect
+        topLeft={tileDragStart?.inGrid}
+        activeTile={activeTile?.inGrid}
+        {gap} tileSetDim={16}
+      ></SelectibleRect>
       {#each matrix as tileSheetIndex , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
       {@const thisTileData = { inGrid : cords, tileSheetIndex, } }
@@ -100,7 +104,7 @@
               inGrid : cords,
               tileSheetIndex,
             }}
-            on:mousedown={ e => tileDragStart = thisTileData }
+            on:mousedown={ e =>{ tileDragStart = thisTileData ; console.log( tileDragStart ) }}
             on:mouseup={ e => tileDragEnd = thisTileData }
             dimensions={tileSetDim}
             tileSetIndex={tileSheetIndex}
@@ -110,11 +114,7 @@
       {/each}
       <slot />
 
-      <SelectibleRect
-        topLeft={tileDragStart?.inGrid}
-        activeTile={activeTile?.inGrid}
-        {gap} tileSetDim={16}
-      ></SelectibleRect>
+
       </Layer>
     </Stage>
   </div>

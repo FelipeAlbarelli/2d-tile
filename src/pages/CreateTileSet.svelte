@@ -1,19 +1,33 @@
 <script lang="ts">
     import GridSystem from '../lib/GridSystem.svelte';
     import SingleTile from '../lib/SingleTile.svelte';
+	import { createEmptyMatrix } from '../lib/grid-helpers';
     import { nullTileState, type TileCoreData } from '../lib/tile-helpers';
     
-    
+    let tilePallet = createEmptyMatrix( 40 ,'none' )    
 
 
     let gridCanva : GridSystem;
 
+    let tilesInTileSet : TileCoreData[] = []
+    $: tilePalletState = tilePallet.map( ({selected,tileSetIndex} , index) => {
+        const itemInPallet = tilesInTileSet.at(index);
+
+        return {
+            selected : false,
+            tileSetIndex : itemInPallet?.tileSheetIndex ?? -1
+        }
+    })
+
    
     const leftClickOnMain = (tile : TileCoreData) => {
         gridCanva.matrixSetTile( tile.inGrid , {selected : true})
+        tilesInTileSet.push(tile);
+        tilePallet[0].selected = true
     }
     const rightClickOnMain = (tile : TileCoreData) => {
         gridCanva.matrixSetTile( tile.inGrid , {selected : false})
+        tilesInTileSet = tilesInTileSet.filter( currTile => currTile.tileSheetIndex !== tile.tileSheetIndex )
     }
 
 
@@ -34,6 +48,7 @@
     </div>
     <div class="side">
         <GridSystem 
+            matrix={tilePalletState}
             dim={{col: 2 , row : 20}}
             gap={1}
             scale={2}

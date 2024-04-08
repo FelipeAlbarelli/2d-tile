@@ -24,7 +24,9 @@
 
     let tileDragStart : null | TileCoreData = null
     let tileDragEnd : null | TileCoreData = null
-
+    let mouseIsDown = false;
+    $: width =  ((tileSetDim + (gap * 2) ) * scale * dim.col )  +  (padding * 2);
+    $: height = ((tileSetDim + (gap * 2) ) * scale * dim.row ) + padding * 2
 
     /**
      * Tile que está sendo hover pelo mouse agora
@@ -39,10 +41,9 @@
     let stage : StegeKonva;
     let layerStage : LayerType
 
+    let selectedTile : Cord | null;
 
-
-    $: width =  ((tileSetDim + (gap * 2) ) * scale * dim.col )  +  (padding * 2);
-    $: height = ((tileSetDim + (gap * 2) ) * scale * dim.row ) + padding * 2
+    $: selectedTileBot = mouseIsDown ? activeTile.inGrid : selectedTile
 
     const hanlderContext = (e: MouseEvent) => {
       despachante('context', activeTile );
@@ -55,7 +56,7 @@
 
 
   $: console.log({
-    tileDragStart , tileDragEnd
+    mouseIsDown
   })
 </script>
 
@@ -65,6 +66,7 @@
 <div 
     on:contextmenu|preventDefault={hanlderContext}
     on:click={handleClick}
+    on:mouseup={ e => {tileDragEnd = activeTile ; mouseIsDown = false; }}
     class="grid-cont"
     >
 
@@ -82,12 +84,8 @@
           scaleY : scale 
         }}
       >
-      <SelectibleRect
-        topLeft={tileDragStart?.inGrid}
-        activeTile={activeTile?.inGrid}
-        botRight={tileDragEnd?.inGrid}
-        {gap} tileSetDim={16}
-      ></SelectibleRect>
+
+
       {#each matrix as tileSheetIndex , index }
       {@const cords = indexToCord({index, totalCols : dim.col , totalRows : dim.row})}
       {@const thisTileData = { inGrid : cords, tileSheetIndex, } }
@@ -96,8 +94,7 @@
               inGrid : cords,
               tileSheetIndex,
             }}
-            on:mousedown={ e =>{ tileDragStart = thisTileData ; console.log( tileDragStart ) }}
-            on:mouseup={ e => tileDragEnd = thisTileData }
+            on:mousedown={ e =>{ selectedTile = cords; mouseIsDown = true  }}
             dimensions={tileSetDim}
             tileSetIndex={tileSheetIndex}
             gap={gap}
@@ -106,7 +103,17 @@
       {/each}
       <slot />
 
-
+        <SelectibleRect
+          topLeft={selectedTile}
+          botRight={selectedTileBot}
+          {gap} tileSetDim={16}
+        ></SelectibleRect>
+        <SelectibleRect
+          color={'blue'}
+          topLeft={selectedTile}
+          botRight={tileDragEnd?.inGrid}
+          {gap} tileSetDim={16}
+        ></SelectibleRect>
       </Layer>
     </Stage>
   </div>

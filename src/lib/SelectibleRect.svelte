@@ -9,8 +9,9 @@
     $: halfGap = gap/2;
 
     export let topLeft : Cord | null = null;
-    export let activeTile : Cord | null = null;
     export let botRight : Cord | null = null;
+    export let color = 'white';
+    export let strokeWidth = 1;
 
     const getXY = (c : Cord | null) => ({
         x : c ? -halfGap + ( ( tileSetDim + gap ) * c.col  ) : -100,
@@ -19,11 +20,11 @@
 
 
     $: topLeftXY = getXY(topLeft);
+    $: botLeftXY = getXY(botRight);
 
-    $: activeXY = getXY(activeTile);
 
-    $: totalWidth =  tileSetDim + activeXY.x - topLeftXY.x 
-    $: totalHeight = tileSetDim + activeXY.y - topLeftXY.y
+    $: activeWidth =  tileSetDim + botLeftXY.x - topLeftXY.x 
+    $: activeHeight =  tileSetDim + botLeftXY.y - topLeftXY.y 
 
 
     $: clickConfig = {
@@ -36,28 +37,16 @@
 
     $: activeConfig = {
         ...topLeftXY,
-        width: totalWidth + halfGap,
-        height: totalHeight + halfGap,
-        stroke: 'red',
-        strokeWidth: 1,
-    }
-
-    $: activeConfig = {
-        ...topLeftXY,
-        width: totalWidth + halfGap,
-        height: totalHeight + halfGap,
-        stroke: 'red',
-        strokeWidth: 1,
+        width: activeWidth + halfGap,
+        height: activeHeight + halfGap,
+        stroke: color,
+        strokeWidth: strokeWidth
     }
 
 
 </script>
 
-
-<Rect
-    config={clickConfig}
-></Rect>
-{#if topLeft && activeTile}
+{#if topLeft}
     <Rect
         config={activeConfig}
     ></Rect>

@@ -15,16 +15,16 @@
     export let tileSetDim = 16;
     export let dim = {col : 2 , row : 2}
     export let initialMatrix :InitialMatrixOptions = 'none'
-
-
     export let matrix = createEmptyMatrix( dim.col * dim.row , initialMatrix)
-
-    
     export let scale : number
 
     export const matrixSetTile = (cord: Cord , value : number) => {
       matrix[cord.index] = value
     }
+
+    let tileDragStart : null | TileCoreData = null
+    let tileDragEnd : null | TileCoreData = null
+
 
     /**
      * Tile que está sendo hover pelo mouse agora
@@ -45,23 +45,14 @@
     $: height = ((tileSetDim + (gap * 2) ) * scale * dim.row ) + padding * 2
 
     const hanlderContext = (e: MouseEvent) => {
-      despachante('context', activeTile )
+      despachante('context', activeTile );
+      tileDragStart = null;
     }
 
     const handleClick = (e : MouseEvent) => {
       despachante('confirm' , activeTile)
     }
 
-  let rectConfig = {
-      start : {
-        x: 0 , y : 0
-      },
-      end : {
-        x : 0 , y: 0
-      }
-  }
-  let tileDragStart : null | TileCoreData = null
-  let tileDragEnd : null | TileCoreData = null
 
   $: console.log({
     tileDragStart , tileDragEnd
@@ -94,6 +85,7 @@
       <SelectibleRect
         topLeft={tileDragStart?.inGrid}
         activeTile={activeTile?.inGrid}
+        botRight={tileDragEnd?.inGrid}
         {gap} tileSetDim={16}
       ></SelectibleRect>
       {#each matrix as tileSheetIndex , index }

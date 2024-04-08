@@ -22,8 +22,11 @@
 
     $: activeXY = getXY(activeTile);
 
+    $: totalWidth =  tileSetDim + activeXY.x - topLeftXY.x 
+    $: totalHeight = tileSetDim + activeXY.y - topLeftXY.y
 
-    $: rectConfig = {
+
+    $: clickConfig = {
         ...topLeftXY,
         width: tileSetDim + halfGap,
         height: tileSetDim + halfGap,
@@ -32,9 +35,17 @@
     }
 
     $: activeConfig = {
-        ...activeXY,
-        width: tileSetDim + halfGap,
-        height: tileSetDim + halfGap,
+        ...topLeftXY,
+        width: totalWidth + halfGap,
+        height: totalHeight + halfGap,
+        stroke: 'red',
+        strokeWidth: 1,
+    }
+
+    $: activeConfig = {
+        ...topLeftXY,
+        width: totalWidth + halfGap,
+        height: totalHeight + halfGap,
         stroke: 'red',
         strokeWidth: 1,
     }
@@ -44,8 +55,10 @@
 
 
 <Rect
-    config={rectConfig}
+    config={clickConfig}
 ></Rect>
-<Rect
-    config={activeConfig}
-></Rect>
+{#if topLeft && activeTile}
+    <Rect
+        config={activeConfig}
+    ></Rect>
+{/if}
